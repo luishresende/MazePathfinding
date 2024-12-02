@@ -19,12 +19,16 @@ def search_star(graph, starting, objective):
         if current == objective:
             return new_path, cost
 
+        x, y = current
+        current_node = graph[x][y]  # Acessando o objeto grafo
+
         # Adiciona vizinhos a fila de prioridade
-        for neighbor, terrain, reward, in graph[current]:
-            terrain_index = terrains.index(terrain)
-            if neighbor not in visited:
+        for adj in current_node.adjacents:
+            terrain_index = terrains.index(adj.terrain_type)
+            neighbour = (adj.matrix_position_x, adj.matrix_position_y)
+            if neighbour not in visited:
                 g = cost + terrains[terrain_index].default_coast
-                f = g + heuristic.heuristic(neighbor, objective)
-                heapq.heappush(priority_queue, (f, neighbor, g, new_path))
+                f = g + heuristic.heuristic(neighbour, objective)
+                heapq.heappush(priority_queue, (f, neighbour, g, new_path))
 
     return None, None

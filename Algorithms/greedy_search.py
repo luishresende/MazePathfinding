@@ -20,10 +20,14 @@ def greedy_search(graph, starting, objective):
         if current == objective:
             return new_path, cost
 
+        x, y = current
+        current_node = graph[x][y]
+
         # Adiciona vizinhos a fila de prioridade
-        for neighbor, terrain, reward in graph[current]:
-            terrain_index = terrains.index(terrain)
-            if neighbor not in visited:
-                heapq.heappush(priority_queue, (heuristic.heuristic(neighbor, objective), neighbor, cost + terrains[terrain_index].default_coast, new_path))
+        for adj in current_node.adjacents:
+            terrain_index = terrains.index(adj.terrain_type)
+            neighbour = (adj.matrix_position_x, adj.matrix_position_y)
+            if neighbour not in visited:
+                heapq.heappush(priority_queue, (heuristic.heuristic(neighbour, objective), neighbour, cost + terrains[terrain_index].default_coast, new_path))
 
     return None, None

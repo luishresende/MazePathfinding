@@ -9,22 +9,23 @@ def bfs(graph, starting, objective):
     while queue:
         current, cost, path = queue.popleft()
 
-        current_tuple = tuple(current)
-        if current_tuple in visited:
+        if current in visited:
             continue
 
-        visited.add(current_tuple)
+        visited.add(current)
         new_path = path + [current]
 
         # Verifica se encontrou o objetivo
         if current == objective:
             return new_path, cost
-        print("Current Tuple", current_tuple)
-        current_node = graph[current_tuple] # Acessando o objeto grafo
-        print("Currente Node", current_node)
-        for neighbor, terrain, reward in current_node.adjs_list:
-            terrain_index = terrains.index(terrain)
-            if neighbor not in visited:
-                queue.append((neighbor, cost + terrain_index, new_path + [neighbor]))
+
+        x, y = current
+        current_node = graph[x][y] # Acessando o objeto grafo
+
+        for adj in current_node.adjacents:
+            terrain_index = terrains.index(adj.terrain_type)
+            neighbour = (adj.matrix_position_x, adj.matrix_position_y)
+            if neighbour not in visited:
+                queue.append((neighbour, cost + terrain_index, new_path + [neighbour]))
 
     return None, None
