@@ -1,3 +1,4 @@
+from Algorithms.bfs import bfs
 from Game import *
 from Game.GameFunctions import *
 
@@ -58,11 +59,11 @@ while running:
     if len(positions['starting']) != 0 and len(positions['end']) != 0:
         # Chama o algoritmo de busca (Exemplo: A* ou BFS)
         # O algoritmo deve retornar o caminho, e o caminho será exibido
-        start_pos = positions['starting']
-        end_pos = positions['end']
+        start_pos = tuple(positions['starting'])
+        end_pos = tuple(positions['end'])
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
-        # algorith_path = run_pathfinding_algorithm(graph_matrix, start_pos, end_pos)
+        algorith_path = bfs(graph_matrix, start_pos, end_pos)
 
     # Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
