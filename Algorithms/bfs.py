@@ -1,59 +1,45 @@
 from collections import deque
-from queue import Queue
+from Game import algorith_path_manager
+from Game.GameFunctions import update_maze_surface_algorithm
+from time import sleep
 
-from Game import terrains, TerrainType, Graph
 
-def bfs(starting, objective, graph):
+def bfs(start_node, target_pos, surface_manager, game_matrix):
     """
-    Realiza a busca em largura (BFS) a partir da posição inicial até a posição objetivo.
+    Busca em largura para encontrar um nó com a posição (x, y) especificada e retorna o caminho.
 
-    Args:
-        starting (tuple): Posição inicial (x, y).
-        objective (tuple): Posição objetivo (x, y).
-
-    Returns:
-        path (list): Lista de posições que formam o caminho encontrado.
-        cost (int): Custo total do caminho encontrado.
+    :param start_node: O nó inicial do grafo.
+    :param target_pos: A posição alvo como uma tupla (x, y).
+    :return: Uma lista de nós representando o caminho encontrado ou None se nenhum caminho for encontrado.
     """
-    # Fila de BFS: (nó atual, custo acumulado, caminho percorrido)
-    queue = deque([(starting, 0, [])])
-    visited = set()
-    # print(f"Objetivo a ser alcançado: {objective}")
+    visited = set()  # Para rastrear os nós visitados
+    queue = deque([(start_node, [start_node])])  # Fila para rastrear os nós e os caminhos
 
     while queue:
-        current, cost, path = queue.popleft()
-        # print(f"Atual: {current}")
-
-        # Se o nó já foi visitado, ignore
-        if current in visited:
+        current_node, path = queue.popleft()  # Remove o nó da frente da fila e seu caminho
+        # Verifica se já foi visitado
+        if current_node in visited:
             continue
 
-        # Marque o nó como visitado
-        visited.add(current)
-        new_path = path + [current]
+        # Marca como visitado
+        visited.add(current_node)
+        surface_manager.update_surface(
+            update_maze_surface_algorithm,
+            graph=current_node,
+            color=(255, 0, 0),
+            maze_square_size=15,
+        )
+        print(f'Game Matrix[{current_node.matrix_position_x}][{current_node.matrix_position_y}]: {game_matrix[current_node.matrix_position_x][current_node.matrix_position_y]}')
 
-        # Verifica se encontrou o objetivo
-        if current == objective:
-            # print(f"Caminho encontrado: {new_path} com custo {cost}")
-            return new_path, cost
 
-        x, y = current
+        # Verifica se o nó atual está na posição alvo
+        if (current_node.matrix_position_x, current_node.matrix_position_y) == target_pos:
+            print(path)
+            return path  # Retorna o caminho encontrado
 
-        # Itera sobre os nós adjacentes
-        for adj in graph[x][y].adjacents:
-            # adj_x, adj_y = adj.matrix_position_x, adj.matrix_position_y
-
-            # Se for uma parede, ignora
-            if graph[adj.matrix_position_x][adj.matrix_position_y] == 0:
-                continue
-
-            # Calcula o custo baseado no tipo de terreno
-            terrain_index = terrains.index(adj.terrain_type)
-            neighbour = (adj.matrix_position_x, adj.matrix_position_y)
-
-            if neighbour not in visited:
-                # Atualiza o custo com base no tipo de terreno
-                neighbour_cost = cost + terrain_index
-                queue.append((neighbour, neighbour_cost, new_path + [neighbour]))
-
-    return None, None  # Caso não encontre um caminho
+        # Adiciona os nós adjacentes não visitados à fila, com o caminho atualizado
+        for adjacent in current_node.adjacents:
+            if adjacent not in visited:
+                queue.append((adjacent, path + [adjacent]))
+        sleep(0.3)
+    return None  # Retorna None se nenhum nó na posição especificada for encontrado

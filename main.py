@@ -1,33 +1,32 @@
 from Algorithms.bfs import bfs
 from Game import *
 from Game.GameFunctions import *
+from Game.AlgorithmPathManager import AlgorithmPathManager
+from Game.SurfaceManager import SurfaceManager
 
 import pygame
+import threading
 
 clock = pygame.time.Clock()
 
 # Carrega a matriz do labirinto e inicializa os grafos
 game_matrix = load_matrix_from_file('maze.txt')
+print(game_matrix)
 graph_matrix = initilize_game_matrix(game_matrix, terrains)
 graph_matrix = initialize_graphs(graph_matrix)
-
 pygame.init()
-screen_size = (900, 900)
+
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Labirinto Inteligente")
-
-# Definindo a posição e tamanho do labirinto na tela
-maze_width = screen_size[1] - 150
-maze_height = screen_size[0] - 150
-maze_x = 75
-maze_y = 75
 
 # Criação da superfície do labirinto
 maze_surface = create_maze_surface(maze_x, maze_y, 15, graph_matrix)
 
+surface_manager = SurfaceManager(maze_surface)
+
 # Definindo as variáveis de controle
 positions = {'starting': [], 'end': []}  # Posições do início e fim
-algorith_path = []  # Caminho do algoritmo (ainda não implementado)
+algorith_path_manager = AlgorithmPathManager  # Caminho do algoritmo (ainda não implementado)
 running = True
 
 while running:
@@ -45,7 +44,7 @@ while running:
     pygame.draw.rect(screen, (36, 1, 10), pygame.Rect(maze_x, maze_y, maze_width, maze_height))
 
     # Exibindo o labirinto na tela
-    screen.blit(maze_surface, (maze_x, maze_y))
+    screen.blit(surface_manager.get_surface(), (maze_x, maze_y))
 
     # Exibindo o jogador (se a posição inicial estiver definida)
     if len(positions['starting']) != 0:
@@ -59,15 +58,17 @@ while running:
     if len(positions['starting']) != 0 and len(positions['end']) != 0:
         # Chama o algoritmo de busca (Exemplo: A* ou BFS)
         # O algoritmo deve retornar o caminho, e o caminho será exibido
-        start_pos = tuple(positions['starting'])
+
         end_pos = tuple(positions['end'])
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
-        algorith_path, _ = bfs(start_pos, end_pos, graph_matrix)
+        thread = threading.Thread(target=bfs, args=(graph_matrix[positions['starting'][0]][positions['starting'][1]], end_pos, surface_manager, game_matrix))
+        thread.start()
+        positions['starting'] = positions['end'] = []
 
-    # Desenhando o caminho encontrado (se houver)
+    '''# Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
-        draw_algorithm_path(screen, algorith_path, (maze_x, maze_y), 15, (255, 0, 0))
+        draw_algorithm_path(screen, algorith_path, (maze_x, maze_y), 15, (255, 0, 0))'''
 
     # Atualizando a tela
     pygame.display.flip()
