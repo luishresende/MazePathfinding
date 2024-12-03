@@ -63,7 +63,7 @@ while running:
         end_pos = tuple(positions['end'])
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
-        algorith_path = bfs(graph_matrix, start_pos, end_pos)
+        algorith_path, _ = bfs(start_pos, end_pos, graph_matrix)
 
     # Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
