@@ -180,8 +180,8 @@ def draw_algorithm_path(screen, algorithm_path, maze_cords, maze_square_size, co
     square_surface.fill((*color, 128))  # Cor com canal alpha
 
     for square_path in algorithm_path:
-        pos_x = square_path[0][0] * maze_square_size + base_x
-        pos_y = square_path[1][1] * maze_square_size + base_y
+        pos_x = square_path[0] * maze_square_size + base_x
+        pos_y = square_path[1] * maze_square_size + base_y
 
         # Desenha o quadrado semi-transparente na tela
         screen.blit(square_surface, (pos_x, pos_y))
