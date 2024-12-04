@@ -1,4 +1,7 @@
 from Algorithms.bfs import bfs
+from Algorithms.dfs import dfs
+from Algorithms.greedy_search import greedy_search
+from Algorithms.search_star import search_star
 from Game import *
 from Game.GameFunctions import *
 from Game.AlgorithmPathManager import AlgorithmPathManager
@@ -64,7 +67,7 @@ while running:
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
         print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
-        thread = threading.Thread(target=bfs, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
+        thread = threading.Thread(target=search_star, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
         thread.start()
         running_algorithm = True
 

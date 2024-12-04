@@ -32,7 +32,13 @@ def bfs(start_node, target_pos, surface_manager, game_matrix):
 
         # Verifica se o nó atual está na posição alvo
         if (current_node.matrix_position_x, current_node.matrix_position_y) == target_pos:
-            print(path)
+            for node in path:
+                surface_manager.update_surface(
+                    update_maze_surface_algorithm,
+                    graph=node,  # Passa cada nó individualmente
+                    color=(0, 255, 0),
+                    maze_square_size=15,
+                )
             return path  # Retorna o caminho encontrado
 
         # Adiciona os nós adjacentes não visitados à fila, com o caminho atualizado
