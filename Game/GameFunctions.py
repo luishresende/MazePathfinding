@@ -162,7 +162,7 @@ def get_click_position_in_matrix(click_pos, graph_matrix, maze_cords, maze_size,
     matrix_pos_x = pos_x // 15
     matrix_pos_y = pos_y // 15
 
-    if isinstance(graph_matrix[matrix_pos_x][matrix_pos_y], Graph):
+    if isinstance(graph_matrix[matrix_pos_y][matrix_pos_x], Graph):
         return {'graph': [matrix_pos_x, matrix_pos_y]}
     else:
         return {'wall': [matrix_pos_x, matrix_pos_y]}

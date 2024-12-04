@@ -29,8 +29,6 @@ def bfs(start_node, target_pos, surface_manager, game_matrix):
             color=(255, 0, 0),
             maze_square_size=15,
         )
-        print(f'Game Matrix[{current_node.matrix_position_x}][{current_node.matrix_position_y}]: {game_matrix[current_node.matrix_position_x][current_node.matrix_position_y]}')
-
 
         # Verifica se o nó atual está na posição alvo
         if (current_node.matrix_position_x, current_node.matrix_position_y) == target_pos:
@@ -41,5 +39,5 @@ def bfs(start_node, target_pos, surface_manager, game_matrix):
         for adjacent in current_node.adjacents:
             if adjacent not in visited:
                 queue.append((adjacent, path + [adjacent]))
-        sleep(0.3)
+        sleep(0.02)
     return None  # Retorna None se nenhum nó na posição especificada for encontrado

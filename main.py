@@ -28,6 +28,7 @@ surface_manager = SurfaceManager(maze_surface)
 positions = {'starting': [], 'end': []}  # Posições do início e fim
 algorith_path_manager = AlgorithmPathManager  # Caminho do algoritmo (ainda não implementado)
 running = True
+running_algorithm = False
 
 while running:
     for event in pygame.event.get():
@@ -55,16 +56,18 @@ while running:
         screen.blit(finish_line, (positions['end'][0] * 15 + maze_x, positions['end'][1] * 15 + maze_y))
 
     # Se o início e fim estiverem definidos, chama o algoritmo de busca para encontrar o caminho
-    if len(positions['starting']) != 0 and len(positions['end']) != 0:
+    if not running_algorithm and len(positions['starting']) != 0 and len(positions['end']) != 0:
         # Chama o algoritmo de busca (Exemplo: A* ou BFS)
         # O algoritmo deve retornar o caminho, e o caminho será exibido
 
         end_pos = tuple(positions['end'])
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
-        thread = threading.Thread(target=bfs, args=(graph_matrix[positions['starting'][0]][positions['starting'][1]], end_pos, surface_manager, game_matrix))
+        print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
+        thread = threading.Thread(target=bfs, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
         thread.start()
-        positions['starting'] = positions['end'] = []
+        running_algorithm = True
+
 
     '''# Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
