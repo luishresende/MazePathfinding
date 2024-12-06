@@ -67,7 +67,7 @@ while running:
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
         print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
-        thread = threading.Thread(target=search_star, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
+        thread = threading.Thread(target=greedy_search, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
         thread.start()
         running_algorithm = True
 

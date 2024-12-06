@@ -17,6 +17,7 @@ def bfs(start_node, target_pos, surface_manager, game_matrix):
 
     while queue:
         current_node, path = queue.popleft()  # Remove o nó da frente da fila e seu caminho
+
         # Verifica se já foi visitado
         if current_node in visited:
             continue
