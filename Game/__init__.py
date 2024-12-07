@@ -16,6 +16,17 @@ solo_rochoso = pygame.image.load('textures/rochoso_textura.png')
 solo_plano = pygame.image.load('textures/plano_textura.png')
 finish_line = pygame.image.load('textures/finish.png')
 player = pygame.image.load('textures/smile.png')
+play_button = {'textures': [pygame.image.load('textures/play_button.png'), pygame.image.load('textures/on_play_button.png')],
+               'position': (835, 838),
+               'size': (49, 49),
+               'clicked': False,
+               'blocked': True}
+reset_button = {'textures': [pygame.image.load('textures/reset_button.png'), pygame.image.load('textures/on_reset_button.png')],
+               'position': (770, 838),
+               'size': (49, 49),
+               'clicked': False}
+
+
 
 solid_and_flat = TerrainType("Sólido e Plano", 1, (194, 192, 192), solo_plano)
 rocky = TerrainType("Rochoso", 10, (128, 128, 128), solo_rochoso)

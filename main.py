@@ -59,7 +59,7 @@ while running:
         screen.blit(finish_line, (positions['end'][0] * 15 + maze_x, positions['end'][1] * 15 + maze_y))
 
     # Se o início e fim estiverem definidos, chama o algoritmo de busca para encontrar o caminho
-    if not running_algorithm and len(positions['starting']) != 0 and len(positions['end']) != 0:
+    if play_button['clicked']:
         # Chama o algoritmo de busca (Exemplo: A* ou BFS)
         # O algoritmo deve retornar o caminho, e o caminho será exibido
 
@@ -69,9 +69,18 @@ while running:
         print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
         thread = threading.Thread(target=greedy_search, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
         thread.start()
-        running_algorithm = True
+        play_button['clicked'] = False
 
+    mouse_pos = pygame.mouse.get_pos()
+    if not play_button['blocked'] and click_in_button(mouse_pos, play_button):
+        screen.blit(play_button['textures'][1], play_button['position'])
+    else:
+        screen.blit(play_button['textures'][0], play_button['position'])
 
+    if click_in_button(mouse_pos, reset_button):
+        screen.blit(reset_button['textures'][1], reset_button['position'])
+    else:
+        screen.blit(reset_button['textures'][0], reset_button['position'])
     '''# Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
         draw_algorithm_path(screen, algorith_path, (maze_x, maze_y), 15, (255, 0, 0))'''

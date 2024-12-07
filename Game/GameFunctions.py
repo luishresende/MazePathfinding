@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from Game.Graph import Graph
-from Game import algorith_path_manager, maze_x, maze_y, reward_image
+from Game import algorith_path_manager, reward_image, play_button, reset_button
 
 import pygame
 
@@ -137,6 +137,18 @@ def load_matrix_from_file(file_path):
     return matrix
 
 
+def click_in_matrix(click_pos, maze_cords, maze_size):
+    pos_x, pos_y = click_pos
+    return not (pos_x < maze_cords[0] or pos_y < maze_cords[1] or pos_x >= maze_size[0] + maze_cords[0] or pos_y >= maze_size[1] + maze_cords[1])
+
+
+def click_in_button(click_pos, button):
+    x, y = click_pos
+    btn_pos_x, btn_pos_y = button['position']
+    btn_width, btn_height = button['size']
+    return btn_pos_x < x < btn_pos_x + btn_width and btn_pos_y < y < btn_pos_y + btn_height
+
+
 def get_click_position_in_matrix(click_pos, graph_matrix, maze_cords, maze_size, screen_size):
     """
     Determina a posição na matriz de grafos onde o mouse foi clicado.
@@ -152,9 +164,6 @@ def get_click_position_in_matrix(click_pos, graph_matrix, maze_cords, maze_size,
         dict: Um dicionário com a posição do clique e o tipo de célula (grafo ou parede), ou None se fora dos limites.
     """
     pos_x, pos_y = click_pos
-    if pos_x < maze_cords[0] or pos_y < maze_cords[1] or pos_x >= maze_size[0] + maze_cords[0] or pos_y >= maze_size[1] + maze_cords[1]:
-        print("Out of bounds")
-        return None
 
     pos_x -= maze_cords[0]
     pos_y -= maze_cords[1]
@@ -206,16 +215,21 @@ def handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_hei
     """
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         x, y = event.pos
-        graph_cord = get_click_position_in_matrix((x, y), graph_matrix, (maze_x, maze_y), (maze_width, maze_height), screen_size)
-        if graph_cord is not None:
-            if len(positions['starting']) == 0:
-                if 'graph' in graph_cord:
-                    positions['starting'] = graph_cord['graph']
-            elif len(positions['end']) == 0:
-                positions['end'] = graph_cord[[key for key in graph_cord.keys()][0]]
-            else:
-                positions['starting'] = []
-                positions['end'] = []
+        positions_defined = len(positions['starting'] + positions['end']) == 4
+        if not positions_defined and click_in_matrix((x, y), (maze_x, maze_y), (maze_width, maze_height)):
+            graph_cord = get_click_position_in_matrix((x, y), graph_matrix, (maze_x, maze_y), (maze_width, maze_height), screen_size)
+            if graph_cord is not None:
+                if len(positions['starting']) == 0:
+                    if 'graph' in graph_cord:
+                        positions['starting'] = graph_cord['graph']
+                elif len(positions['end']) == 0:
+                    positions['end'] = graph_cord[[key for key in graph_cord.keys()][0]]
+                    play_button['blocked'] = False
+        elif positions_defined and click_in_button((x, y), play_button):
+                play_button['clicked'] = True
+        elif click_in_button((x, y), reset_button):
+            positions['starting'] = positions['end'] = []
+            play_button['blocked'] = True
 
 
 def update_maze_surface_algorithm(surface, graph, color, maze_square_size):
