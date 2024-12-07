@@ -1,8 +1,5 @@
-from Algorithms.bfs import bfs
-from Algorithms.dfs import dfs
-from Algorithms.greedy_search import greedy_search
-from Algorithms.search_star import search_star
-from Game import terrains, screen_size, maze_x, maze_y, maze_width, maze_height, player, finish_line
+from Algorithms import bfs, dfs, greedy_search, search_star
+from Game import terrains, screen_size, maze_x, maze_y, maze_width, maze_height, player, finish_line, previous_button, next_button, label, selected_algorithm
 import Game
 from Game.GameFunctions import *
 from Game.AlgorithmPathManager import AlgorithmPathManager
@@ -27,11 +24,36 @@ pygame.display.set_caption("Labirinto Inteligente")
 maze_surface = create_maze_surface(maze_x, maze_y, 15, graph_matrix)
 
 Game.surface_manager = SurfaceManager(maze_surface)
+Game.algorithms = {
+    'default':{
+        'function': None,
+        'label': pygame.image.load('textures/algorithms/default.png')
+    },
+    'star': {
+        'function': search_star.search_star,
+        'label': pygame.image.load('textures/algorithms/star.png')
+    },
+    'bfs': {
+        'function': bfs.bfs,
+        'label': pygame.image.load('textures/algorithms/bfs.png')
+    },
+    'dfs': {
+        'function': dfs.dfs,
+        'label': pygame.image.load('textures/algorithms/dfs.png')
+    },
+    'greedy': {
+        'function': greedy_search.greedy_search,
+        'label': pygame.image.load('textures/algorithms/greedy.png')
+    }
+}
+algorithms_names = [key for key in Game.algorithms.keys()]
+
 
 # Definindo as variáveis de controle
 positions = {'starting': [], 'end': []}  # Posições do início e fim
 algorith_path_manager = AlgorithmPathManager  # Caminho do algoritmo (ainda não implementado)
 running = True
+
 
 while running:
     for event in pygame.event.get():
@@ -59,28 +81,53 @@ while running:
         screen.blit(finish_line, (positions['end'][0] * 15 + maze_x, positions['end'][1] * 15 + maze_y))
 
     # Se o início e fim estiverem definidos, chama o algoritmo de busca para encontrar o caminho
-    if play_button['clicked']:
-        # Chama o algoritmo de busca (Exemplo: A* ou BFS)
-        # O algoritmo deve retornar o caminho, e o caminho será exibido
-
+    if Game.play_button['clicked'] and not Game.play_button['blocked']:
         end_pos = tuple(positions['end'])
-        # Algoritmo de busca (A ser implementado)
-        # Exemplo fictício, substitua com seu algoritmo real:
-        print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
-        thread = threading.Thread(target=greedy_search, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, Game.surface_manager, game_matrix))
+
+        def thread_target():
+            # Executa o algoritmo de busca
+            Game.algorithms[algorithms_names[Game.selected_algorithm]]['function'](
+                graph_matrix[positions['starting'][1]][positions['starting'][0]],
+                end_pos,
+                Game.surface_manager,
+                game_matrix
+            )
+            # Após a execução do algoritmo, desbloqueia o botão
+            Game.play_button['blocked'] = False
+
+        # Cria e inicia a thread
+        thread = threading.Thread(target=thread_target)
         thread.start()
-        play_button['clicked'] = False
+
+        Game.play_button['clicked'] = False
+        Game.play_button['blocked'] = True
 
     mouse_pos = pygame.mouse.get_pos()
-    if not play_button['blocked'] and click_in_button(mouse_pos, play_button):
-        screen.blit(play_button['textures'][1], play_button['position'])
+    if not Game.play_button['blocked'] and click_in_button(mouse_pos, Game.play_button):
+        screen.blit(Game.play_button['textures'][1], Game.play_button['position'])
     else:
-        screen.blit(play_button['textures'][0], play_button['position'])
+        screen.blit(Game.play_button['textures'][0], Game.play_button['position'])
 
-    if click_in_button(mouse_pos, reset_button):
-        screen.blit(reset_button['textures'][1], reset_button['position'])
+    if click_in_button(mouse_pos, Game.reset_button):
+        screen.blit(Game.reset_button['textures'][1], Game.reset_button['position'])
     else:
-        screen.blit(reset_button['textures'][0], reset_button['position'])
+        screen.blit(Game.reset_button['textures'][0], Game.reset_button['position'])
+
+    if not previous_button['clicked'] and click_in_button(mouse_pos, previous_button):
+        screen.blit(previous_button['textures'][1], previous_button['position'])
+    else:
+        screen.blit(previous_button['textures'][0], previous_button['position'])
+
+    if not next_button['clicked'] and click_in_button(mouse_pos, next_button):
+        screen.blit(next_button['textures'][1], next_button['position'])
+    else:
+        screen.blit(next_button['textures'][0], next_button['position'])
+
+    screen.blit(label, (285, 13))
+    screen.blit(Game.algorithms[algorithms_names[Game.selected_algorithm]]['label'], (285, 13))
+
+
+
     '''# Desenhando o caminho encontrado (se houver)
     if len(algorith_path) > 0:
         draw_algorithm_path(screen, algorith_path, (maze_x, maze_y), 15, (255, 0, 0))'''

@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from Game.Graph import Graph
-from Game import surface_manager, reward_image, play_button, reset_button
+from Game import reward_image
 import Game
 
 import pygame
@@ -225,13 +225,28 @@ def handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_hei
                         positions['starting'] = graph_cord['graph']
                 elif len(positions['end']) == 0:
                     positions['end'] = graph_cord[[key for key in graph_cord.keys()][0]]
-                    play_button['blocked'] = False
-        elif positions_defined and click_in_button((x, y), play_button):
-                play_button['clicked'] = True
-        elif click_in_button((x, y), reset_button):
+                    if Game.selected_algorithm != 0:
+                        Game.play_button['blocked'] = False
+        elif positions_defined and click_in_button((x, y), Game.play_button):
+                Game.play_button['clicked'] = True
+        elif click_in_button((x, y), Game.reset_button):
             positions['starting'] = positions['end'] = []
-            play_button['blocked'] = True
+            Game.play_button['blocked'] = True
             Game.surface_manager.reset_surface()
+        elif click_in_button((x, y), Game.previous_button):
+            if Game.selected_algorithm == 1:
+                Game.selected_algorithm = 4
+            else:
+                Game.selected_algorithm -= 1
+            if len(positions['starting'] + positions['end']) == 4:
+                Game.play_button['blocked'] = False
+        elif click_in_button((x, y), Game.next_button):
+            if Game.selected_algorithm == 4:
+                Game.selected_algorithm = 1
+            else:
+                Game.selected_algorithm += 1
+            if len(positions['starting'] + positions['end']) == 4:
+                Game.play_button['blocked'] = False
 
 
 
