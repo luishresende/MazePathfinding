@@ -10,6 +10,7 @@ class SurfaceManager:
         """
         self.lock = Lock()
         self.surface = surface
+        self.surface_backup = surface.copy()
 
     def update_surface(self, draw_function, *args, **kwargs):
         """
@@ -32,3 +33,7 @@ class SurfaceManager:
         """
         with self.lock:
             return self.surface.copy()  # Retorna uma cópia para evitar modificações externas
+
+    def reset_surface(self):
+        with self.lock:
+            self.surface = self.surface_backup.copy()

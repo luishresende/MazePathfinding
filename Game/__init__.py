@@ -41,3 +41,4 @@ maze_width = screen_size[1] - 150
 maze_height = screen_size[0] - 150
 maze_x = 75
 maze_y = 75
+surface_manager = None

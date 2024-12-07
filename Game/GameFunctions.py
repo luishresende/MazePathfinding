@@ -1,7 +1,8 @@
 from copy import deepcopy
 
 from Game.Graph import Graph
-from Game import algorith_path_manager, reward_image, play_button, reset_button
+from Game import surface_manager, reward_image, play_button, reset_button
+import Game
 
 import pygame
 
@@ -230,6 +231,8 @@ def handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_hei
         elif click_in_button((x, y), reset_button):
             positions['starting'] = positions['end'] = []
             play_button['blocked'] = True
+            Game.surface_manager.reset_surface()
+
 
 
 def update_maze_surface_algorithm(surface, graph, color, maze_square_size):

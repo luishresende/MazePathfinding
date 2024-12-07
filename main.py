@@ -2,7 +2,8 @@ from Algorithms.bfs import bfs
 from Algorithms.dfs import dfs
 from Algorithms.greedy_search import greedy_search
 from Algorithms.search_star import search_star
-from Game import *
+from Game import terrains, screen_size, maze_x, maze_y, maze_width, maze_height, player, finish_line
+import Game
 from Game.GameFunctions import *
 from Game.AlgorithmPathManager import AlgorithmPathManager
 from Game.SurfaceManager import SurfaceManager
@@ -25,13 +26,12 @@ pygame.display.set_caption("Labirinto Inteligente")
 # Criação da superfície do labirinto
 maze_surface = create_maze_surface(maze_x, maze_y, 15, graph_matrix)
 
-surface_manager = SurfaceManager(maze_surface)
+Game.surface_manager = SurfaceManager(maze_surface)
 
 # Definindo as variáveis de controle
 positions = {'starting': [], 'end': []}  # Posições do início e fim
 algorith_path_manager = AlgorithmPathManager  # Caminho do algoritmo (ainda não implementado)
 running = True
-running_algorithm = False
 
 while running:
     for event in pygame.event.get():
@@ -48,7 +48,7 @@ while running:
     pygame.draw.rect(screen, (36, 1, 10), pygame.Rect(maze_x, maze_y, maze_width, maze_height))
 
     # Exibindo o labirinto na tela
-    screen.blit(surface_manager.get_surface(), (maze_x, maze_y))
+    screen.blit(Game.surface_manager.get_surface(), (maze_x, maze_y))
 
     # Exibindo o jogador (se a posição inicial estiver definida)
     if len(positions['starting']) != 0:
@@ -67,7 +67,7 @@ while running:
         # Algoritmo de busca (A ser implementado)
         # Exemplo fictício, substitua com seu algoritmo real:
         print(graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_y, graph_matrix[positions['starting'][0]][positions['starting'][1]].matrix_position_x)
-        thread = threading.Thread(target=greedy_search, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, surface_manager, game_matrix))
+        thread = threading.Thread(target=greedy_search, args=(graph_matrix[positions['starting'][1]][positions['starting'][0]], end_pos, Game.surface_manager, game_matrix))
         thread.start()
         play_button['clicked'] = False
 
