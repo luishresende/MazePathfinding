@@ -1,6 +1,12 @@
 import math
 from Game import *
 
+rewards = [(1, 22), (3, 7), (4, 16), (7, 42), (11, 21), (11, 32), (15, 5),
+               (15, 21), (15, 32), (15, 41), (23, 17), (23, 23), (23, 30), (23, 34),
+               (23, 40), (27, 25), (27, 28), (28, 17), (28, 40), (30, 11), (30, 21),
+               (30, 32), (30, 36), (32, 21), (36, 28), (39, 33), (39, 35), (39, 37),
+               (40, 16), (41, 33), (41, 35), (41, 37), (42, 40), (43, 33), (43, 35),
+               (43, 37), (45, 12)]
 
 # Heurística combinada
 def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
@@ -14,13 +20,6 @@ def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
     reward_value: int - Valor padrão de uma recompensa.
     weights: tuple - Pesos (w1, w2, w3) para distância, custo do terreno e recompensa, respectivamente.
     """
-
-    rewards = [(1, 22), (3, 7), (4, 16), (7, 42), (11, 21), (11, 32), (15, 5),
-               (15, 21), (15, 32), (15, 41), (23, 17), (23, 23), (23, 30), (23, 34),
-               (23, 40), (27, 25), (27, 28), (28, 17), (28, 40), (30, 11), (30, 21),
-               (30, 32), (30, 36), (32, 21), (36, 28), (39, 33), (39, 35), (39, 37),
-               (40, 16), (41, 33), (41, 35), (41, 37), (42, 40), (43, 33), (43, 35),
-               (43, 37), (45, 12)]
 
     w1, w2, w3 = weights
 
@@ -36,8 +35,8 @@ def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
     reward_influence = 0
     for reward in rewards:
         reward_distance = abs(reward[0] - current_pos[0]) + abs(reward[1] - current_pos[1])
-        if reward_distance <= 1:  # Considera apenas recompensas próximas
-            reward_influence -= reward_value / (reward_distance + 1)
+        # if reward_distance <= 5:  # Considera apenas recompensas próximas
+        reward_influence += reward_value / (reward_distance + 1)
 
     # Combina os fatores na heurística
     return w1 * distance + w2 * terrain_cost + w3 * reward_influence
