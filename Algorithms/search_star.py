@@ -7,7 +7,7 @@ from Game.GameFunctions import update_maze_surface_algorithm
 from time import sleep
 
 
-def search_star(start_node, target_pos, surface_manager, game_matrix, reward_value=10, weights=(1, 1, 1)):
+def search_star(start_node, target_pos, surface_manager, game_matrix, reward_value=1000, weights=(1, 1, 1)):
     visited = set()
     counter = 0
 
