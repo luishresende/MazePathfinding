@@ -28,8 +28,7 @@ def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
     distance = abs(target_pos[0] - current_pos[0]) + abs(target_pos[1] - current_pos[1])
 
     # Custo do terreno no nó atual
-    terrain_type = terrains.index(current_node.terrain_type)
-    terrain_cost = terrains[terrain_type].default_coast  # Custo infinito se for parede
+    terrain_cost = current_node.terrain_type.default_coast  # Custo infinito se for parede
 
     # Atração por recompensas próximas
     reward_influence = 0
@@ -37,6 +36,5 @@ def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
         reward_distance = abs(reward[0] - current_pos[0]) + abs(reward[1] - current_pos[1])
         # if reward_distance <= 5:  # Considera apenas recompensas próximas
         reward_influence += reward_value / (reward_distance + 1)
-
     # Combina os fatores na heurística
     return w1 * distance + w2 * terrain_cost + w3 * reward_influence
