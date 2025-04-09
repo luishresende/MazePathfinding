@@ -1,5 +1,5 @@
 from Algorithms import bfs, dfs, greedy_search, search_star
-from Game import terrains, screen_size, maze_x, maze_y, maze_width, maze_height, player, finish_line, previous_button, next_button, label, selected_algorithm
+from Game import terrains, screen_size, maze_x, maze_y, maze_width, maze_height, player, finish_line, previous_button, next_button, label, background
 import Game
 from Game.GameFunctions import *
 from Game.AlgorithmPathManager import AlgorithmPathManager
@@ -12,7 +12,6 @@ clock = pygame.time.Clock()
 
 # Carrega a matriz do labirinto e inicializa os grafos
 game_matrix = load_matrix_from_file('maze.txt')
-print(game_matrix)
 graph_matrix = initilize_game_matrix(game_matrix, terrains)
 graph_matrix = initialize_graphs(graph_matrix)
 pygame.init()
@@ -50,7 +49,7 @@ algorithms_names = [key for key in Game.algorithms.keys()]
 
 
 # Definindo as variáveis de controle
-positions = {'starting': [], 'end': []}  # Posições do início e fim
+
 algorith_path_manager = AlgorithmPathManager  # Caminho do algoritmo (ainda não implementado)
 running = True
 
@@ -61,10 +60,10 @@ while running:
             running = False
 
         # Lida com o clique do mouse para definir as posições de início e fim
-        handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_height, screen_size, positions)
+        handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_height, screen_size, Game.positions)
 
     # Preenchendo o fundo
-    screen.fill((64, 80, 67))  # Cor do fundo
+    screen.blit(background, (0, 0))
 
     # Desenhando o contorno do labirinto
     pygame.draw.rect(screen, (36, 1, 10), pygame.Rect(maze_x, maze_y, maze_width, maze_height))
@@ -73,27 +72,30 @@ while running:
     screen.blit(Game.surface_manager.get_surface(), (maze_x, maze_y))
 
     # Exibindo o jogador (se a posição inicial estiver definida)
-    if len(positions['starting']) != 0:
-        screen.blit(player, (positions['starting'][0] * 15 + maze_x, positions['starting'][1] * 15 + maze_y))
+    if len(Game.positions['starting']) != 0:
+        draw_player(screen, player, Game.positions['starting'])
 
     # Exibindo a linha de chegada (se a posição final estiver definida)
-    if len(positions['end']) != 0:
-        screen.blit(finish_line, (positions['end'][0] * 15 + maze_x, positions['end'][1] * 15 + maze_y))
+    if len(Game.positions['end']) != 0:
+        screen.blit(finish_line, (Game.positions['end'][0] * 15 + maze_x, Game.positions['end'][1] * 15 + maze_y))
 
     # Se o início e fim estiverem definidos, chama o algoritmo de busca para encontrar o caminho
     if Game.play_button['clicked'] and not Game.play_button['blocked']:
-        end_pos = tuple(positions['end'])
+        end_pos = tuple(Game.positions['end'])
 
         def thread_target():
             # Executa o algoritmo de busca
-            Game.algorithms[algorithms_names[Game.selected_algorithm]]['function'](
-                graph_matrix[positions['starting'][1]][positions['starting'][0]],
+            path = Game.algorithms[algorithms_names[Game.selected_algorithm]]['function'](
+                graph_matrix[Game.positions['starting'][1]][Game.positions['starting'][0]],
                 end_pos,
                 Game.surface_manager,
                 game_matrix
             )
-            # Após a execução do algoritmo, desbloqueia o botão
-            Game.play_button['blocked'] = False
+            if path is not None:
+                update_player_road(path)
+            else:
+                print("Caminho não encontrado")
+            Game.waiting_restart = True
 
         # Cria e inicia a thread
         thread = threading.Thread(target=thread_target)

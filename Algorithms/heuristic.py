@@ -37,4 +37,4 @@ def heuristic(current_node, target_pos, reward_value=10, weights=(1, 1, 1)):
         # if reward_distance <= 5:  # Considera apenas recompensas próximas
         reward_influence += reward_value / (reward_distance + 1)
     # Combina os fatores na heurística
-    return w1 * distance + w2 * terrain_cost + w3 * reward_influence
+    return w1 * distance + w2 * terrain_cost - w3 * reward_influence

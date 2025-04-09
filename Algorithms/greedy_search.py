@@ -1,13 +1,16 @@
 import heapq
 from Algorithms import heuristic
-from Game.GameFunctions import update_maze_surface_algorithm
-from time import sleep
+from Game.GameFunctions import update_maze_surface_algorithm, format_time
+from time import sleep, time
+from Game import algorithm_sleep_time
 
-def greedy_search(start_node, target_pos, surface_manager, game_matrix):
-    print("\nIniciando busca gulosa:")
+def greedy_search(start_node, target_pos, surface_manager, game_matrix, weights=(7.5, 1, 5)):
     visited = set()
     counter = 0
-    priority_queue = [(heuristic.heuristic(start_node, target_pos), counter, start_node, [start_node])]  # (heurística, contador, nó atual, caminho)
+    iterations = 0
+    start_time = time()
+    priority_queue = [(heuristic.heuristic(start_node, target_pos, weights=weights), counter, start_node, [start_node])]  # (heurística, contador, nó atual, caminho)
+
 
     while priority_queue:
         # print("\nFronteira (fila de prioridade):")
@@ -30,6 +33,9 @@ def greedy_search(start_node, target_pos, surface_manager, game_matrix):
 
         # Verifica se o nó atual é o objetivo
         if (current_node.matrix_position_x, current_node.matrix_position_y) == target_pos:
+            end_time = time()
+            exec_time = end_time - start_time
+            exec_time -= iterations * algorithm_sleep_time
             for node in path:
                 surface_manager.update_surface(
                     update_maze_surface_algorithm,
@@ -37,6 +43,7 @@ def greedy_search(start_node, target_pos, surface_manager, game_matrix):
                     color=(0, 255, 0),
                     maze_square_size=15,
                 )
+            print(f"Busca Gulosa: {format_time(exec_time)}")
             return path
 
         # Adiciona os vizinhos à fila de prioridade
@@ -44,8 +51,10 @@ def greedy_search(start_node, target_pos, surface_manager, game_matrix):
             if adjacent not in visited:
                 # print("Adicionando vizinho:", (adjacent.matrix_position_x, adjacent.matrix_position_y))
                 counter += 1
-                heapq.heappush(priority_queue, (heuristic.heuristic(adjacent, target_pos), counter, adjacent, path + [adjacent]))
-        sleep(0.02)
-
-    print("Nenhum caminho encontrado.")
+                heapq.heappush(priority_queue, (heuristic.heuristic(adjacent, target_pos, weights=weights), counter, adjacent, path + [adjacent]))
+        sleep(algorithm_sleep_time)
+    end_time = time()
+    exec_time = end_time - start_time
+    exec_time -= iterations * algorithm_sleep_time
+    print(f"Busca Gulosa: {format_time(exec_time)}")
     return None

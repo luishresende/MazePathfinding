@@ -1,7 +1,8 @@
 from copy import deepcopy
+from time import sleep
 
 from Game.Graph import Graph
-from Game import reward_image, play_button
+from Game import reward_image, play_button, maze_x, maze_y, algorithm_sleep_time
 import Game
 
 import pygame
@@ -21,31 +22,24 @@ def initialize_graphs(graph_matrix):
 
     for l in range(rows):
         for c in range(columns):
+            # Verifica se é um grafo válido
             if isinstance(graph_matrix[l][c], Graph):
-                # Verifica se é um grafo válido
-                print(f"Graph ({l}, {c}): ", end="")
 
                 # Baixo
                 if l < rows - 1 and isinstance(graph_matrix[l + 1][c], Graph):
                     graph_matrix[l][c].add_adjacent(graph_matrix[l + 1][c])
-                    print(f"({l + 1}, {c}) ", end="")
 
                 # Cima
                 if l > 0 and isinstance(graph_matrix[l - 1][c], Graph):
                     graph_matrix[l][c].add_adjacent(graph_matrix[l - 1][c])
-                    print(f"({l - 1}, {c}) ", end="")
 
                 # Direita
                 if c < columns - 1 and isinstance(graph_matrix[l][c + 1], Graph):
                     graph_matrix[l][c].add_adjacent(graph_matrix[l][c + 1])
-                    print(f"({l}, {c + 1}) ", end="")
 
                 # Esquerda
                 if c > 0 and isinstance(graph_matrix[l][c - 1], Graph):
                     graph_matrix[l][c].add_adjacent(graph_matrix[l][c - 1])
-                    print(f"({l}, {c - 1}) ", end="")
-
-                print("")  # Nova linha para cada grafo
 
     return graph_matrix
 
@@ -68,7 +62,6 @@ def initilize_game_matrix(game_matrix, terrains):
     for l in range(game_rows):
         for c in range(game_columns):
             if graph_matrix[l][c] != 0:  # Ignora células de paredes
-                print(f'Graph ({l}, {c}): {graph_matrix[l][c]}')
                 if graph_matrix[l][c] == 5:
                     graph_matrix[l][c] = Graph(terrains[0], c, l, True)
                 else:
@@ -223,7 +216,7 @@ def handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_hei
                 if len(positions['starting']) == 0:
                     if 'graph' in graph_cord:
                         positions['starting'] = graph_cord['graph']
-                elif len(positions['end']) == 0:
+                elif not Game.waiting_restart and len(positions['end']) == 0:
                     positions['end'] = graph_cord[[key for key in graph_cord.keys()][0]]
                     if Game.selected_algorithm != 0:
                         Game.play_button['blocked'] = False
@@ -233,6 +226,7 @@ def handle_mouse_click(event, graph_matrix, maze_x, maze_y, maze_width, maze_hei
             positions['starting'] = positions['end'] = []
             Game.play_button['blocked'] = True
             Game.surface_manager.reset_surface()
+            Game.waiting_restart = False
         elif click_in_button((x, y), Game.previous_button):
             if Game.selected_algorithm == 1:
                 Game.selected_algorithm = 4
@@ -272,3 +266,39 @@ def update_maze_surface_algorithm(surface, graph, color, maze_square_size):
 
     # Atualiza a superfície fornecida
     surface.blit(square_surface, (pos_x, pos_y))
+
+
+def update_player_road(path):
+    for graph in path:
+        sleep(0.1)
+        Game.positions['starting'] = [graph.matrix_position_x, graph.matrix_position_y]
+
+    Game.positions['end'] = []
+
+
+def draw_player(screen, player_sprite, matrix_position):
+    pos_x, pos_y = matrix_position[0] * 15 + maze_x, matrix_position[1] * 15 + maze_y
+    screen.blit(player_sprite, (pos_x, pos_y))
+
+
+def format_time(timestamp):
+    """
+    Formata um timestamp em horas:minutos:segundos:milissegundos.
+
+    Args:
+        timestamp (float): O tempo em segundos como retorno de time.time().
+
+    Returns:
+        str: O tempo formatado em "HH:MM:SS:MMM".
+    """
+    # Divide o timestamp em segundos inteiros e milissegundos
+    seconds = int(timestamp)
+    milliseconds = int((timestamp - seconds) * 1000)
+
+    # Converte os segundos para horas, minutos e segundos
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+
+    # Formata o tempo como string
+    return f"{hours:02}:{minutes:02}:{seconds:02}:{milliseconds:03}"

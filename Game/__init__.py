@@ -18,6 +18,7 @@ solo_plano = pygame.image.load('textures/plano_textura.png')
 finish_line = pygame.image.load('textures/finish.png')
 player = pygame.image.load('textures/smile.png')
 label = pygame.image.load('textures/algorithms/label.png')
+background = pygame.image.load('textures/background.png')
 play_button = {'textures': [pygame.image.load('textures/buttons/play_button.png'), pygame.image.load('textures/buttons/on_play_button.png')],
                'position': (549, 838),
                'size': (49, 49),
@@ -59,3 +60,5 @@ algorithms = None
 
 selected_algorithm = 0
 running_search = False
+waiting_restart = False
+algorithm_sleep_time = 0.02
